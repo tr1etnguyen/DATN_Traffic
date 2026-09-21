@@ -1,0 +1,101 @@
+{
+	"nodes": [
+		{
+			"name": "LyThuongKiet+CMT8",
+			"lat": 10.783652367105528,
+			"lon": 106.65427335403669
+		},
+		{
+			"name": "ToHienThanh",
+			"lat": 10.774553725087989,
+			"lon": 106.66218145823841
+		},
+		{
+			"name": "BacHai1+NguyenTriPhuong",
+			"lat": 10.772192825163406,
+			"lon": 106.66514261693227
+		},
+		{
+			"name": "BacHai2",
+			"lat": 10.78158243438409,
+			"lon": 106.65967491432123
+		},
+		{
+			"name": "3T2_1",
+			"lat": 10.769012054387488,
+			"lon": 106.66955800660183
+		},
+		{
+			"name": "3T2_2",
+			"lat": 10.764310923795312,
+			"lon": 106.66053962610248
+		},
+		{
+			"name": "SuVanHanh",
+			"lat": 10.774152651813841,
+			"lon": 106.66833716961447
+		}
+	],
+	"connections":[
+			{
+				"from": "LyThuongKiet+CMT8", 
+				"to": "ToHienThanh", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThuongKiet+CMT8", 
+				"to": "BacHai1+NguyenTriPhuong", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThuongKiet+CMT8", 
+				"to": "BacHai2", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThuongKiet+CMT8", 
+				"to": "3T2_1", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThuongKiet+CMT8", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "ToHienThanh", 
+				"to": "BacHai1+NguyenTriPhuong", 
+				"is_one_way": false
+			},
+			{
+				"from": "ToHienThanh", 
+				"to": "SuVanHanh", 
+				"is_one_way": false
+			},
+			{
+				"from": "BacHai1+NguyenTriPhuong", 
+				"to": "BacHai2", 
+				"is_one_way": false
+			},
+			{
+				"from": "BacHai1+NguyenTriPhuong", 
+				"to": "3T2_1", 
+				"is_one_way": false
+			},
+			{
+				"from": "BacHai1+NguyenTriPhuong", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "3T2_1", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "3T2_1", 
+				"to": "SuVanHanh", 
+				"is_one_way": false
+			}
+	]
+}
