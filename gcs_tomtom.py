@@ -8,7 +8,9 @@ import json
 # ============================================================
 # GOOGLE CLOUD STORAGE
 # ============================================================
+
 from google.cloud import storage
+
 
 # ============================================================
 # TIMEZONE VIỆT NAM
@@ -17,11 +19,12 @@ from google.cloud import storage
 VIETNAM_TIMEZONE = timezone(
     timedelta(hours=7)
 )
+
+
 # ============================================================
 # 1. DANH SÁCH API KEYS
 # ============================================================
 
-# Khuyến nghị:
 # Không hard-code API key trong source code.
 #
 # Trên Linux VM:
@@ -30,7 +33,17 @@ VIETNAM_TIMEZONE = timezone(
 #
 # Sau đó Python sẽ tự đọc danh sách key.
 
-API_KEYS = os.environ["TOMTOM_API_KEYS"].split(",")
+API_KEYS = [
+    key.strip()
+    for key in os.environ["TOMTOM_API_KEYS"].split(",")
+    if key.strip()
+]
+
+if not API_KEYS:
+    raise ValueError(
+        "TOMTOM_API_KEYS is empty."
+    )
+
 
 current_key_index = 0
 
@@ -39,15 +52,6 @@ current_key_index = 0
 # 2. FILE CẤU HÌNH
 # ============================================================
 
-# JSON có cấu trúc:
-#
-# {
-#   "nodes": [
-#       {"name": "...", "lat": ..., "lon": ...}
-#   ],
-#   "connections": [...]
-# }
-
 INPUT_FILE = "target.json"
 
 OUTPUT_FILE = "cleaned.csv"
@@ -55,32 +59,22 @@ OUTPUT_FILE = "cleaned.csv"
 # Lấy dữ liệu mỗi 5 phút
 INTERVAL = 300
 
-# 24 giờ / 5 phút = 288 vòng
-MAX_ROUNDS = 24 * 60 * 60 // INTERVAL
+# 24 giờ / 5 phút = 288 round
+#
+# MAX_ROUNDS KHÔNG dùng để dừng chương trình.
+#
+# Nó chỉ biểu thị số round tối đa trong một ngày
+# nếu collector chạy liên tục đủ 24 giờ.
+MAX_ROUNDS = (
+    24 * 60 * 60
+) // INTERVAL
 
 
 # ============================================================
 # 3. GOOGLE CLOUD STORAGE CONFIG
 # ============================================================
 
-# Thay bằng tên bucket của bạn
-#
-# Ví dụ:
-#
-# GCS_BUCKET_NAME = "traffic-dataset-bucket"
-
 GCS_BUCKET_NAME = "tomtom_dataset"
-
-# Thư mục dataset trên GCS
-#
-# Kết quả:
-#
-# gs://tomtom_dataset/traffic/
-#     2026-10-08/
-#         traffic_2026-10-08.csv
-#
-#     2026-10-09/
-#         traffic_2026-10-09.csv
 
 GCS_PREFIX = "traffic"
 
@@ -91,7 +85,9 @@ GCS_PREFIX = "traffic"
 
 def get_current_key():
 
-    return API_KEYS[current_key_index]
+    return API_KEYS[
+        current_key_index
+    ]
 
 
 def switch_key():
@@ -152,7 +148,8 @@ def get_traffic(lat, lon):
             if res.status_code in [403, 429]:
 
                 print(
-                    f"Key #{current_key_index + 1} exhausted "
+                    f"Key #{current_key_index + 1} "
+                    f"exhausted "
                     f"(HTTP {res.status_code})"
                 )
 
@@ -190,6 +187,10 @@ def get_traffic(lat, lon):
 
                 continue
 
+            # ------------------------------------------------
+            # Kiểm tra dữ liệu
+            # ------------------------------------------------
+
             if "flowSegmentData" not in data:
 
                 print(
@@ -223,7 +224,10 @@ def get_traffic(lat, lon):
 # 6. FLATTEN JSON
 # ============================================================
 
-def flatten_json(value, prefix=""):
+def flatten_json(
+    value,
+    prefix=""
+):
 
     out = {}
 
@@ -269,9 +273,9 @@ with open(
     network_data = json.load(f)
 
 
-# Chỉ sử dụng trường "nodes".
-#
-# Trường "connections" hiện không được sử dụng.
+# ------------------------------------------------------------
+# Chỉ sử dụng trường "nodes"
+# ------------------------------------------------------------
 
 nodes = network_data.get(
     "nodes",
@@ -288,7 +292,8 @@ if not nodes:
 
 
 print(
-    f"Loaded nodes from JSON: {len(nodes)}"
+    f"Loaded nodes from JSON: "
+    f"{len(nodes)}"
 )
 
 
@@ -343,6 +348,7 @@ def upload_daily_dataset(
     local_file,
     dataset_date
 ):
+
     """
     Upload dataset của một ngày lên GCS.
 
@@ -361,17 +367,21 @@ def upload_daily_dataset(
     """
 
     print()
+
     print(
         "============================================================"
     )
 
     print(
-        f"Uploading dataset for date: {dataset_date}"
+        f"Uploading dataset for date: "
+        f"{dataset_date}"
     )
 
     print(
-        f"Local file: {local_file}"
+        f"Local file: "
+        f"{local_file}"
     )
+
 
     # --------------------------------------------------------
     # Kiểm tra file tồn tại
@@ -380,22 +390,26 @@ def upload_daily_dataset(
     if not os.path.exists(local_file):
 
         print(
-            f"File does not exist: {local_file}"
+            f"File does not exist: "
+            f"{local_file}"
         )
 
         return False
 
+
     # --------------------------------------------------------
-    # Kiểm tra file có dữ liệu hay không
+    # Kiểm tra file có dữ liệu
     # --------------------------------------------------------
 
     if os.path.getsize(local_file) == 0:
 
         print(
-            f"File is empty: {local_file}"
+            f"File is empty: "
+            f"{local_file}"
         )
 
         return False
+
 
     # --------------------------------------------------------
     # Tạo tên file trên GCS
@@ -407,16 +421,15 @@ def upload_daily_dataset(
         f"traffic_{dataset_date}.csv"
     )
 
+
     try:
 
         # ----------------------------------------------------
         # Tạo GCS client
-        #
-        # Google Cloud SDK sẽ tự sử dụng credentials
-        # của VM nếu VM đã được cấp service account.
         # ----------------------------------------------------
 
         client = storage.Client()
+
 
         # ----------------------------------------------------
         # Lấy bucket
@@ -426,21 +439,24 @@ def upload_daily_dataset(
             GCS_BUCKET_NAME
         )
 
+
         # ----------------------------------------------------
-        # Tạo object/blob
+        # Tạo blob
         # ----------------------------------------------------
 
         blob = bucket.blob(
             destination_blob
         )
 
+
         # ----------------------------------------------------
-        # Upload file
+        # Upload
         # ----------------------------------------------------
 
         blob.upload_from_filename(
             local_file
         )
+
 
         print(
             "Upload successful!"
@@ -456,6 +472,7 @@ def upload_daily_dataset(
         )
 
         return True
+
 
     except Exception as e:
 
@@ -476,6 +493,7 @@ def collect_once():
 
     records = []
 
+
     # ========================================================
     # THỜI GIAN VIỆT NAM
     # ========================================================
@@ -488,10 +506,16 @@ def collect_once():
         batch_datetime.isoformat()
     )
 
-    # Unix timestamp vẫn là Unix timestamp chuẩn
+
+    # Unix timestamp chuẩn
     batch_time_unix = int(
         time.time()
     )
+
+
+    # ========================================================
+    # COLLECT TỪNG NODE
+    # ========================================================
 
     for _, row in df_nodes.iterrows():
 
@@ -505,6 +529,7 @@ def collect_once():
             row["lon"]
         )
 
+
         while True:
 
             data = get_traffic(
@@ -515,38 +540,67 @@ def collect_once():
             if data is not None:
                 break
 
+
             print(
-                f"Retry node: {name}..."
+                f"Retry node: "
+                f"{name}..."
             )
 
             time.sleep(2)
+
+
+        # ----------------------------------------------------
+        # Flatten JSON
+        # ----------------------------------------------------
 
         flat_data = flatten_json(
             data
         )
 
+
+        # ----------------------------------------------------
+        # Metadata
+        # ----------------------------------------------------
+
         flat_data["name"] = name
+
         flat_data["lat"] = lat
+
         flat_data["lon"] = lon
 
-        # Thời gian Việt Nam
+
+        # ----------------------------------------------------
+        # Timestamp Việt Nam
+        # ----------------------------------------------------
+
         flat_data["timestamp"] = (
             batch_time_iso
         )
 
+
+        # ----------------------------------------------------
         # Unix timestamp
+        # ----------------------------------------------------
+
         flat_data["timestamp_unix"] = (
             batch_time_unix
         )
+
+
+        # ----------------------------------------------------
+        # Raw JSON
+        # ----------------------------------------------------
 
         flat_data["raw_json"] = json.dumps(
             data,
             ensure_ascii=False
         )
 
+
         records.append(
             flat_data
         )
+
 
         print(
             f"[{batch_time_iso}] "
@@ -555,7 +609,13 @@ def collect_once():
             f"lon={lon}"
         )
 
+
         time.sleep(0.1)
+
+
+    # ========================================================
+    # KHÔNG CÓ DATA
+    # ========================================================
 
     if not records:
 
@@ -563,11 +623,21 @@ def collect_once():
             "No data collected this round."
         )
 
-        return
+        return False
+
+
+    # ========================================================
+    # TẠO DATAFRAME
+    # ========================================================
 
     df_new = pd.DataFrame(
         records
     )
+
+
+    # ========================================================
+    # SẮP XẾP CỘT
+    # ========================================================
 
     metadata_columns = [
         "name",
@@ -575,15 +645,22 @@ def collect_once():
         "lon"
     ]
 
+
     other_columns = [
         column
         for column in df_new.columns
         if column not in metadata_columns
     ]
 
+
     df_new = df_new[
         metadata_columns + other_columns
     ]
+
+
+    # ========================================================
+    # GHI FILE
+    # ========================================================
 
     if not os.path.exists(
         OUTPUT_FILE
@@ -595,11 +672,13 @@ def collect_once():
             encoding="utf-8-sig"
         )
 
+
         print(
             f"Created new file: "
             f"{OUTPUT_FILE} "
             f"({len(df_new)} records)"
         )
+
 
     else:
 
@@ -611,28 +690,57 @@ def collect_once():
             encoding="utf-8-sig"
         )
 
+
         print(
-            f"Appended {len(df_new)} "
-            f"records to {OUTPUT_FILE}"
+            f"Appended "
+            f"{len(df_new)} records "
+            f"to {OUTPUT_FILE}"
         )
 
 
+    return True
+
+
 # ============================================================
-# 10. MAIN LOOP - 24 HOURS
+# 10. MAIN LOOP - RUN FOREVER
 # ============================================================
 
+print()
+
 print(
-    f"Start collecting traffic for 24 hours "
-    f"({MAX_ROUNDS} rounds, "
-    f"every {INTERVAL // 60} minutes)..."
+    "============================================================"
+)
+
+print(
+    "START CONTINUOUS TRAFFIC COLLECTION"
+)
+
+print(
+    f"Interval: "
+    f"{INTERVAL} seconds "
+    f"({INTERVAL // 60} minutes)"
+)
+
+print(
+    f"Maximum rounds per full day: "
+    f"{MAX_ROUNDS}"
+)
+
+print(
+    "Timezone: Vietnam (UTC+7)"
+)
+
+print(
+    "Mode: RUN FOREVER"
+)
+
+print(
+    "============================================================"
 )
 
 
-round_idx = 0
-
-
 # ============================================================
-# NGÀY DATASET HIỆN TẠI - GIỜ VIỆT NAM
+# NGÀY DATASET HIỆN TẠI
 # ============================================================
 
 current_dataset_date = (
@@ -641,47 +749,70 @@ current_dataset_date = (
     ).date()
 )
 
+
+# ============================================================
+# ROUND COUNTER
+#
+# round_idx = 0
+#     -> chưa thu thập round nào
+#
+# round_idx = 1
+#     -> đã thu thập round 1
+#
+# ...
+#
+# Sang ngày mới:
+#
+#     round_idx = 0
+# ============================================================
+
+round_idx = 0
+
+
 print(
     f"Current dataset date "
-    f"(Vietnam): {current_dataset_date}"
+    f"(Vietnam): "
+    f"{current_dataset_date}"
+)
+
+print(
+    "Collector will run forever."
+)
+
+print(
+    "Press Ctrl+C to stop."
 )
 
 
 # ============================================================
-# MAIN LOOP
+# RUN FOREVER
 # ============================================================
 
-while True:
+try:
 
-    round_idx += 1
+    while True:
 
-    print(
-        f"\n================ "
-        f"ROUND {round_idx} "
-        f"================"
-    )
+        # ====================================================
+        # 1. LẤY THỜI GIAN HIỆN TẠI
+        # ====================================================
 
-    start_time = time.time()
-
-    try:
-
-        # ----------------------------------------------------
-        # Lấy ngày hiện tại theo giờ Việt Nam
-        # ----------------------------------------------------
-
-        now_date = (
-            datetime.now(
-                VIETNAM_TIMEZONE
-            ).date()
+        now_datetime = datetime.now(
+            VIETNAM_TIMEZONE
         )
 
-        # ----------------------------------------------------
-        # PHÁT HIỆN SANG NGÀY MỚI
-        # ----------------------------------------------------
+        now_date = (
+            now_datetime.date()
+        )
+
+
+        # ====================================================
+        # 2. KIỂM TRA NGÀY MỚI
+        # ====================================================
 
         if now_date != current_dataset_date:
 
             print()
+
             print(
                 "============================================================"
             )
@@ -704,20 +835,28 @@ while True:
                 "============================================================"
             )
 
-            # ------------------------------------------------
-            # Upload dataset của ngày hôm trước
-            # ------------------------------------------------
 
-            upload_success = upload_daily_dataset(
-                OUTPUT_FILE,
-                current_dataset_date
+            # =================================================
+            # 3. UPLOAD DATASET NGÀY CŨ
+            # =================================================
+
+            upload_success = (
+                upload_daily_dataset(
+                    OUTPUT_FILE,
+                    current_dataset_date
+                )
             )
 
-            # ------------------------------------------------
-            # Chỉ xóa nếu upload thành công
-            # ------------------------------------------------
+
+            # =================================================
+            # 4. UPLOAD THÀNH CÔNG
+            # =================================================
 
             if upload_success:
+
+                # ---------------------------------------------
+                # Xóa file local
+                # ---------------------------------------------
 
                 try:
 
@@ -733,9 +872,40 @@ while True:
                 except OSError as e:
 
                     print(
-                        "Could not remove local "
-                        f"file: {e}"
+                        "WARNING: Could not remove "
+                        f"local file: {e}"
                     )
+
+
+                # ---------------------------------------------
+                # Chuyển sang ngày mới
+                # ---------------------------------------------
+
+                current_dataset_date = (
+                    now_date
+                )
+
+
+                # ---------------------------------------------
+                # RESET ROUND
+                # ---------------------------------------------
+
+                round_idx = 0
+
+
+                print(
+                    f"Started new dataset date: "
+                    f"{current_dataset_date}"
+                )
+
+                print(
+                    "Round counter reset to 0."
+                )
+
+
+            # =================================================
+            # 5. UPLOAD THẤT BẠI
+            # =================================================
 
             else:
 
@@ -745,97 +915,158 @@ while True:
                 )
 
                 print(
-                    "Keeping local file."
+                    "Keeping local dataset."
                 )
 
-                pending_file = (
-                    f"pending_"
-                    f"{current_dataset_date}"
-                    f".csv"
+                print(
+                    "Will retry upload in 60 seconds."
                 )
 
-                try:
 
-                    os.rename(
-                        OUTPUT_FILE,
-                        pending_file
-                    )
+                # ---------------------------------------------
+                # Không chuyển sang ngày mới.
+                #
+                # Không collect data mới.
+                #
+                # Tránh trộn dataset của hai ngày.
+                # ---------------------------------------------
 
-                    print(
-                        f"Old dataset moved to: "
-                        f"{pending_file}"
-                    )
+                time.sleep(60)
 
-                except OSError as e:
+                continue
 
-                    print(
-                        "Could not rename old "
-                        f"dataset: {e}"
-                    )
 
-            # ------------------------------------------------
-            # Bắt đầu ngày dataset mới
-            # ------------------------------------------------
+        # ====================================================
+        # 6. TĂNG ROUND
+        # ====================================================
 
-            current_dataset_date = (
-                now_date
-            )
+        round_idx += 1
 
-            print(
-                f"Started new dataset date: "
-                f"{current_dataset_date}"
-            )
 
-        # ----------------------------------------------------
-        # Thu thập dữ liệu
-        # ----------------------------------------------------
+        # ====================================================
+        # 7. HIỂN THỊ THÔNG TIN
+        # ====================================================
 
-        collect_once()
-
-    except Exception as e:
+        print()
 
         print(
-            "Error in collect:",
-            e
+            "============================================================"
         )
 
-    # --------------------------------------------------------
-    # Không sleep sau vòng cuối
-    # --------------------------------------------------------
+        print(
+            f"DATASET DATE : "
+            f"{current_dataset_date}"
+        )
 
-    if round_idx == MAX_ROUNDS - 1:
+        print(
+            f"ROUND        : "
+            f"{round_idx}/{MAX_ROUNDS}"
+        )
 
-        break
+        print(
+            f"TIME         : "
+            f"{now_datetime.isoformat()}"
+        )
 
-    elapsed = (
-        time.time() - start_time
-    )
+        print(
+            "============================================================"
+        )
 
-    sleep_time = max(
-        0,
-        INTERVAL - elapsed
-    )
 
-    print(
-        f"Round elapsed: "
-        f"{elapsed:.2f}s"
-    )
+        # ====================================================
+        # 8. COLLECT DATA
+        # ====================================================
 
-    print(
-        f"Sleeping "
-        f"{sleep_time:.2f}s "
-        f"before next round..."
-    )
+        start_time = time.time()
 
-    time.sleep(
-        sleep_time
-    )
+        try:
+
+            collect_success = (
+                collect_once()
+            )
+
+        except Exception as e:
+
+            print(
+                "Error in collect_once():",
+                e
+            )
+
+            collect_success = False
+
+
+        # ====================================================
+        # 9. THỜI GIAN ROUND
+        # ====================================================
+
+        elapsed = (
+            time.time() - start_time
+        )
+
+
+        # ====================================================
+        # 10. SLEEP ĐẾN ROUND TIẾP THEO
+        # ====================================================
+
+        sleep_time = max(
+            0,
+            INTERVAL - elapsed
+        )
+
+
+        print()
+
+        print(
+            f"Round {round_idx} completed."
+        )
+
+        print(
+            f"Collect success: "
+            f"{collect_success}"
+        )
+
+        print(
+            f"Round elapsed: "
+            f"{elapsed:.2f}s"
+        )
+
+        print(
+            f"Sleeping: "
+            f"{sleep_time:.2f}s"
+        )
+
+
+        time.sleep(
+            sleep_time
+        )
 
 
 # ============================================================
-# 11. FINISHED
+# STOP BẰNG CTRL+C
 # ============================================================
 
-print(
-    "\nFinished 24-hour data collection!"
-)
+except KeyboardInterrupt:
+
+    print()
+
+    print(
+        "============================================================"
+    )
+
+    print(
+        "Collector stopped by user."
+    )
+
+    print(
+        f"Current dataset date: "
+        f"{current_dataset_date}"
+    )
+
+    print(
+        f"Current round: "
+        f"{round_idx}"
+    )
+
+    print(
+        "============================================================"
+    )
