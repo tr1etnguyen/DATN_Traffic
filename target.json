@@ -34,6 +34,111 @@
 			"name": "SuVanHanh",
 			"lat": 10.774152651813841,
 			"lon": 106.66833716961447
+		},
+		{
+			"name": "NguyenChiThanh",
+			"lat": 10.759038,
+			"lon": 106.664235
+		},
+		{
+			"name": "NguyenChiThanh2",
+			"lat": 10.7602109,
+			"lon": 106.6700631
+		},
+		{
+			"name": "NgoGiaTu+HongBang",
+			"lat": 10.758499,
+			"lon": 106.667797
+		},
+		{
+			"name": "NgoGiaTu+DienBienPhu",
+			"lat": 10.769899,
+			"lon": 106.675937
+		},
+		{
+			"name": "LyThaiTo_1",
+			"lat": 10.767829,
+			"lon": 106.673279
+		},
+		{
+			"name": "LyThaiTo_2",
+			"lat": 10.767524,
+			"lon": 106.673282
+		},
+		{
+			"name": "TranQuocHoan",
+			"lat": 10.8019273,
+			"lon": 106.6628855
+		},
+		{
+			"name": "NguyenVanTroi+TranQuocHoan",
+			"lat": 10.803375,
+			"lon": 106.663760
+		},
+		{
+			"name": "PhanThucDuyen_1",
+			"lat": 10.803127,
+			"lon": 106.662786
+		},
+		{
+			"name": "PhanThucDuyen_2",
+			"lat": 10.805101,
+			"lon": 106.659978
+		},
+		{
+			"name": "CauVuotLangChaCa+HoangVanThu+PhanDangLuu",
+			"lat": 10.800395,
+			"lon": 106.665034
+		},
+		{
+			"name": "HoangVanThu_1",
+			"lat": 10.8008800,
+			"lon": 106.6620903
+		},
+		{
+			"name": "HoangVanThu_2",
+			"lat": 10.8006812,
+			"lon": 106.6630478
+		},
+		{
+			"name": "Conn_HoangVanThu_PhanDinhGiot",
+			"lat": 10.800398,
+			"lon": 106.666960
+		},
+		{
+			"name": "HoangVanThu+PhanDangLuu",
+			"lat": 10.800024,
+			"lon": 106.667700
+		},
+		{
+			"name": "HongBang",
+			"lat": 10.753647,
+			"lon": 106.653997
+		},
+		{
+			"name": "ThuanKieu",
+			"lat": 10.756108,
+			"lon": 106.658353
+		},
+		{
+			"name": "NguyenTrai",
+			"lat": 10.752794,
+			"lon": 106.654447
+		},
+		{
+			"name": "PhamDinhHo",
+			"lat": 10.752024,
+			"lon": 106.649652
+		},
+		{
+			"name": "MinhPhung",
+			"lat": 10.7545060,
+			"lon": 106.6432571
+		},
+		{
+			"name": "MinhPhung_2",
+			"lat": 10.7545060,
+			"lon": 106.6432571
 		}
 	],
 	"connections":[
@@ -96,6 +201,214 @@
 				"from": "3T2_1", 
 				"to": "SuVanHanh", 
 				"is_one_way": false
+			},
+			{
+				"from": "NguyenChiThanh", 
+				"to": "LyThuongKiet+CMT8", 
+				"is_one_way": false
+			},
+			{
+				"from": "NguyenChiThanh", 
+				"to": "NguyenChiThanh2", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "LyThuongKiet+CMT8", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "NguyenChiThanh", 
+				"is_one_way": false
 			}
+			,
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "NguyenChiThanh2", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "BacHai1+NguyenTriPhuong", 
+				"is_one_way": false
+			}
+			,
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "NgoGiaTu+DienBienPhu", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+DienBienPhu", 
+				"to": "LyThuongKiet+CMT8", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_1", 
+				"to": "NgoGiaTu+DienBienPhu", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_1", 
+				"to": "3T2_1", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_1", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_2", 
+				"to": "NgoGiaTu+DienBienPhu", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_2", 
+				"to": "3T2_1", 
+				"is_one_way": false
+			},
+			{
+				"from": "LyThaiTo_2", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+HongBang", 
+				"to": "NguyenVanTroi+TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "NguyenVanTroi+TranQuocHoan", 
+				"to": "TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "PhanThucDuyen_1", 
+				"to": "TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "TranQuocHoan", 
+				"to": "PhanThucDuyen_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "NguyenVanTroi+TranQuocHoan", 
+				"to": "PhanThucDuyen_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "TranQuocHoan", 
+				"to": "HoangVanThu_1", 
+				"is_one_way": false
+			},
+			{
+				"from": "HoangVanThu_1", 
+				"to": "HoangVanThu_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "HoangVanThu_2", 
+				"to": "CauVuotLangChaCa+HoangVanThu+PhanDangLuu", 
+				"is_one_way": false
+			},
+			{
+				"from": "CauVuotLangChaCa+HoangVanThu+PhanDangLuu", 
+				"to": "Conn_HoangVanThu_PhanDinhGiot", 
+				"is_one_way": false
+			},
+			{
+				"from": "Conn_HoangVanThu_PhanDinhGiot", 
+				"to": "NguyenVanTroi+TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "CauVuotLangChaCa+HoangVanThu+PhanDangLuu", 
+				"to": "HoangVanThu+PhanDangLuu", 
+				"is_one_way": false
+			},
+			{
+				"from": "HoangVanThu+PhanDangLuu", 
+				"to": "NguyenVanTroi+TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "NgoGiaTu+DienBienPhu", 
+				"to": "NguyenVanTroi+TranQuocHoan", 
+				"is_one_way": false
+			},
+			{
+				"from": "HoangVanThu+PhanDangLuu", 
+				"to": "NgoGiaTu+DienBienPhu", 
+				"is_one_way": false
+			},
+			{
+				"from": "HongBang", 
+				"to": "LyThuongKiet+CMT8", 
+				"is_one_way": false
+			},
+			{
+				"from": "HongBang", 
+				"to": "NgoGiaTu+DienBienPhu", 
+				"is_one_way": false
+			},
+			{
+				"from": "ThuanKieu", 
+				"to": "HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "ThuanKieu", 
+				"to": "NgoGiaTu+HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "HongBang", 
+				"to": "NguyenTrai", 
+				"is_one_way": false
+			},
+			{
+				"from": "NguyenTrai", 
+				"to": "ThuanKieu", 
+				"is_one_way": false
+			},
+			{
+				"from": "ThuanKieu", 
+				"to": "PhamDinhHo", 
+				"is_one_way": false
+			},
+			{
+				"from": "PhamDinhHo", 
+				"to": "HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "PhamDinhHo", 
+				"to": "NgoGiaTu+HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "MinhPhung", 
+				"to": "3T2_2", 
+				"is_one_way": false
+			},
+			{
+				"from": "MinhPhung", 
+				"to": "NgoGiaTu+HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "MinhPhung", 
+				"to": "HongBang", 
+				"is_one_way": false
+			},
+			{
+				"from": "MinhPhung_2", 
+				"to": "HongBang", 
+				"is_one_way": false
+			}
+
 	]
 }

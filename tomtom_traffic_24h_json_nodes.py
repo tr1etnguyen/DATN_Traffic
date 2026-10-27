@@ -68,7 +68,7 @@ def switch_key():
 def get_traffic(lat, lon):
     url = (
         "https://api.tomtom.com/traffic/services/4/"
-        "flowSegmentData/absolute/10/json"
+        "flowSegmentData/absolute/18/json"
     )
 
     while True:

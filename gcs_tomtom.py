@@ -76,7 +76,7 @@ MAX_ROUNDS = (
 
 GCS_BUCKET_NAME = "tomtom_dataset"
 
-GCS_PREFIX = "traffic"
+GCS_PREFIX = "New_traffic_28_node_total"
 
 
 # ============================================================
@@ -121,7 +121,7 @@ def get_traffic(lat, lon):
 
     url = (
         "https://api.tomtom.com/traffic/services/4/"
-        "flowSegmentData/absolute/10/json"
+        "flowSegmentData/absolute/18/json"
     )
 
     while True:
